@@ -3,6 +3,7 @@
 //! Top-level GPU driver implementation.
 
 use kernel::{
+    bindings,
     c_str,
     device::Core,
     dma::{
@@ -164,6 +165,9 @@ impl drm::driver::Driver for AsahiDriver {
     const INFO: drm::driver::DriverInfo = INFO;
     /// Open files and exported buffers pin the module while G17P deferred cleanup can run.
     const MODULE: Option<&'static kernel::ThisModule> = Some(&crate::THIS_MODULE);
+    const SHOW_FDINFO: Option<
+        unsafe extern "C" fn(*mut bindings::drm_printer, *mut bindings::drm_file),
+    > = Some(bindings::drm_show_memory_stats);
     const FEATURES: u32 = drm::driver::FEAT_GEM
         | drm::driver::FEAT_RENDER
         | drm::driver::FEAT_SYNCOBJ
